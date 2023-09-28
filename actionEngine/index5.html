@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gesture control player</title>
+    <script>
+
+    function getData() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', 'http://127.0.0.1:5000/get_data', true);
+        xhr.onload = function () {
+            if (xhr.status >= 200 && xhr.status < 400) {
+                var data = JSON.parse(xhr.responseText);
+                controller(data['status']);//获取status对应的value，并传入到视频的控制器
+                document.getElementById('output').innerHTML = 'Data: ' + JSON.stringify(data);
+
+            } else {
+                console.error('Request failed:', xhr.statusText);
+            }
+        };
+        xhr.onerror = function () {
+            console.error('Request failed:', xhr.statusText);
+        };
+        xhr.send();
+    }
+    function controller(status){
+        var videoElement = document.querySelector('video')
+        var videoStatus = !document.querySelector('video').paused
+        if ( videoStatus != status){
+            // 如果播放状态不等于获取到的状态
+            if(videoStatus){
+                //播放中
+                videoElement.pause()
+            }else {
+                //暂停中
+                videoElement.play()
+            }
+
+        }
+    }
+
+    // 每秒发送一次请求
+    setInterval(getData, 1000);
+
+    </script>
+</head>
+<body>
+<video id="videoElement" src="test.mov" controls width="1024"
+                       height="576">
+                    Your browser is too old which doesn't support HTML5 video.
+                </video>
+<div id="output"></div>
+</body>
+</html>
+
+
